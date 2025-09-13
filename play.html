@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>เกมคำต้องเชื่อม - Cute Pink</title>
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #fff3f3;
+      font-family: 'Itim', cursive, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .cute-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 48px;
+      margin-bottom: 18px;
+    }
+    .cute-title-text {
+      color: #e75480;
+      font-family: 'Itim', cursive;
+      font-size: 2.3em;
+      font-weight: bold;
+      letter-spacing: 2px;
+      padding: 0.25em 1.2em;
+      background: linear-gradient(90deg, #ffe0f1 40%, #fff7fa 100%);
+      border-radius: 2em;
+      box-shadow: 0 2px 18px #ffd6ec44;
+      border: 2px dashed #f9b9d6;
+      position: relative;
+    }
+    .cute-title-text:before, .cute-title-text:after {
+      content: "✿";
+      color: #ffafd5;
+      font-size: 1.1em;
+      margin: 0 0.5em;
+      vertical-align: middle;
+      text-shadow: 0 1px 10px #ffe0f7;
+    }
+    .cute-title-text:after {
+      content: "❀";
+      color: #ff90b3;
+      font-size: 1.1em;
+      margin-left: 0.5em;
+    }
+    @media (max-width: 600px) {
+      .cute-title-text { font-size: 1.1em; padding: .2em .7em;}
+    }
+    /* (โค้ดเดิมส่วนอื่นคงเดิม) */
+    .container {
+      max-width: 480px;
+      margin: 44px auto 0 auto;
+      padding: 0 0 36px 0;
+      text-align: center;
+    }
+    .input-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    input[type="text"] {
+      flex: 1;
+      font-size: 1.18em;
+      padding: 13px 18px;
+      border-radius: 12px;
+      border: 1.5px solid #fdc9e3;
+      background: #fff8fc;
+      font-family: 'Itim', cursive;
+      box-shadow: 0 1px 4px #fce7f3;
+      outline: none;
+      width: 68%;
+      transition: border 0.13s;
+    }
+    input[type="text"]:focus {
+      border-color: #e75480;
+    }
+    button#checkBtn {
+      font-size: 1.12em;
+      background: linear-gradient(90deg, #ffb6d5 30%, #ff70ab 100%);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 11px 25px;
+      font-family: 'Itim', cursive;
+      cursor: pointer;
+      box-shadow: 0 1px 8px #ffb6d5;
+      transition: background 0.15s;
+    }
+    button#checkBtn:hover {
+      opacity: .96;
+      background: linear-gradient(90deg, #ff70ab 30%, #ffb6d5 100%);
+    }
+    .result {
+      margin: 16px 0 0 0;
+      font-size: 1.08em;
+      min-height: 32px;
+      color: #e75480;
+      font-family: 'Itim', cursive;
+    }
+    .wordlist-box {
+      background: #fff;
+      padding: 18px 0 18px 0;
+      margin: 36px auto 0 auto;
+      width: 94%;
+      border-radius: 26px;
+      min-height: 320px;
+      box-shadow: 0 2px 24px #ffe2ea;
+      position: relative;
+      transition: filter 0.25s;
+    }
+    .wordlist-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.18em;
+      font-weight: bold;
+      color: #222;
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+      gap: 12px;
+      margin-top: 12px;
+      font-family: 'Itim', cursive;
+    }
+    .eye-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0 4px;
+      outline: none;
+      font-size: 1.2em;
+      margin-left: 2px;
+      vertical-align: middle;
+      transition: opacity 0.18s;
+    }
+    .eye-btn:active { opacity: 0.7; }
+    .word-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 8px;
+      justify-content: flex-start;
+      align-items: flex-start;
+      min-height: 150px;
+      padding: 0 20px;
+      font-family: 'Itim', cursive;
+      font-size: 1.05em;
+      margin-top: 6px;
+      user-select: none;
+      transition: filter 0.2s, opacity 0.2s;
+    }
+    .word-list.blurred {
+      filter: blur(13px) brightness(0.8);
+      opacity: 0.32;
+      pointer-events: none;
+    }
+    .word-item {
+      display: inline-block;
+      background: #ffe0f1;
+      color: #e75480;
+      border-radius: 8px;
+      padding: 6px 17px;
+      margin: 0 2px;
+      box-shadow: 0 1px 6px #fce7f3;
+      font-size: 1em;
+    }
+    .restart-btn {
+      margin: 36px auto 0 auto;
+      display: block;
+      font-family: 'Itim', cursive;
+      font-size: 1.18em;
+      background: #de4340;
+      color: #fff;
+      border: none;
+      border-radius: 13px;
+      padding: 15px 76px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 10px #fbcaca;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.13s;
+      text-shadow: 0 1px 4px #c44a3c15;
+    }
+    .restart-btn:hover {
+      background: #b7312e;
+      transform: translateY(-2px) scale(1.02);
+    }
+    @media (max-width: 600px) {
+      .container { padding: 16px 2vw 16px 2vw; }
+      .wordlist-box { min-height: 190px; }
+      .restart-btn { padding: 14px 27vw; font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cute-title">
+    <span class="cute-title-text">เกมคำต้องเชื่อม</span>
+  </div>
+  <div class="container">
+    <div class="input-row">
+      <input type="text" id="wordInput" placeholder="พิมพ์คำนาม..." autocomplete="off" />
+      <button id="checkBtn">ตรวจสอบ</button>
+    </div>
+    <div class="result" id="result"></div>
+    <div class="wordlist-box">
+      <div class="wordlist-header">
+        word list
+        <button class="eye-btn" id="eyeBtn" title="ซ่อน/แสดงรายการ">
+          <span id="eyeIcon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 4C6 4 2 12 2 12s4 8 10 8 10-8 10-8-4-8-10-8Z" stroke="#111" stroke-width="2"/>
+              <circle cx="12" cy="12" r="3.5" stroke="#111" stroke-width="2"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div class="word-list" id="wordList"></div>
+    </div>
+    <button class="restart-btn" id="restartBtn">RESTART</button>
+  </div>
+  <script>
+    let wordList = [];
+    let eyeOpen = true;
+
+    function updateWordList() {
+      const wordListDiv = document.getElementById('wordList');
+      if (wordList.length === 0) {
+        wordListDiv.innerHTML = "<span style='color:#ddd; font-style:italic;'>ยังไม่มีคำที่ถูกต้อง</span>";
+      } else {
+        wordListDiv.innerHTML = wordList.map(w => `<span class="word-item">${w}</span>`).join(" ");
+      }
+      if (!eyeOpen) {
+        wordListDiv.classList.add('blurred');
+        document.getElementById('eyeIcon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M12 4C6 4 2 12 2 12s4 8 10 8 10-8 10-8-4-8-10-8Z" stroke="#111" stroke-width="2"/>
+<circle cx="12" cy="12" r="3.5" stroke="#111" stroke-width="2"/>
+<path d="M4 20L20 4" stroke="#111" stroke-width="2"/>
+</svg>`;
+      } else {
+        wordListDiv.classList.remove('blurred');
+        document.getElementById('eyeIcon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M12 4C6 4 2 12 2 12s4 8 10 8 10-8 10-8-4-8-10-8Z" stroke="#111" stroke-width="2"/>
+<circle cx="12" cy="12" r="3.5" stroke="#111" stroke-width="2"/>
+</svg>`;
+      }
+    }
+
+    document.getElementById('eyeBtn').onclick = function() {
+      eyeOpen = !eyeOpen;
+      updateWordList();
+    };
+
+    document.getElementById('checkBtn').onclick = async function() {
+      const word = document.getElementById('wordInput').value.trim();
+      if (!word) {
+        document.getElementById('result').innerHTML = "⚠️ กรุณากรอกคำ";
+        return;
+      }
+      if (wordList.includes(word)) {
+        document.getElementById('result').innerHTML = "🔄 มีคำนี้ในกล่องแล้ว";
+        return;
+      }
+      document.getElementById('result').innerHTML = "⏳ กำลังตรวจสอบ...";
+      try {
+        const res = await fetch("/validate_word", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word })
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+          document.getElementById('result').innerHTML = `✅ ${word} : ${data.message}`;
+          wordList.push(word);
+          updateWordList();
+          document.getElementById('wordInput').value = "";
+        } else {
+          document.getElementById('result').innerHTML = `❌ ${word} : ${data.message}`;
+        }
+      } catch {
+        document.getElementById('result').innerHTML = "❌ เชื่อมต่อ API ไม่สำเร็จ";
+      }
+    };
+
+    document.getElementById('restartBtn').onclick = function() {
+      wordList = [];
+      updateWordList();
+      document.getElementById('result').innerHTML = "<span style='color:#43a047; font-size:1.05em'>🎮 เริ่มรอบใหม่แล้ว!</span>";
+      document.getElementById('wordInput').value = "";
+      document.getElementById('wordInput').focus();
+    };
+
+    document.getElementById('wordInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') document.getElementById('checkBtn').click();
+    });
+
+    // เริ่มต้น
+    updateWordList();
+  </script>
+</body>
+</html>
