@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>จัดการคำนามและไม่ใช่คำนาม</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Itim&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Itim', 'Sarabun', cursive, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #ffd6ec 0%, #fff1fc 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff0fa;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(255, 145, 196, .18);
+            max-width: 640px;
+            margin: 40px auto 0 auto;
+            padding: 36px 28px 32px 28px;
+        }
+        h2 {
+            color: #e75480;
+            font-weight: bold;
+            font-family: 'Itim', cursive;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1.5px solid #fdc9e3;
+            font-size: 1.15em;
+            font-family: 'Itim', cursive;
+            margin-bottom: 12px;
+            background: #fff8fc;
+            resize: vertical;
+            min-height: 40px;
+            box-shadow: 0 1px 4px #fce7f3;
+        }
+        button {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.08em;
+            background: linear-gradient(90deg, #ffb6d5 30%, #ff70ab 100%);
+            color: #fff;
+            font-family: 'Itim', cursive;
+            cursor: pointer;
+            box-shadow: 0 1px 8px #ffb6d5;
+            margin: 5px 4px 12px 0;
+            transition: background 0.15s;
+        }
+        button.non-noun { background: linear-gradient(90deg,#fccde2 30%, #ff8fa3 100%);}
+        button.delete { background: linear-gradient(90deg,#fda4b8 40%, #fd6e8a 100%);}
+        button:hover { opacity: .93; }
+        .lists {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 36px;
+        }
+        .list-block {
+            flex: 1 1 220px;
+            background: #fff6fb;
+            border-radius: 15px;
+            padding: 14px 18px 10px 18px;
+            box-shadow: 0 1.5px 7px #ffd6ec;
+            min-width: 200px;
+        }
+        .subtitle {
+            font-size: 1.08em;
+            margin: 0 0 6px 0;
+            color: #e75480;
+            font-weight: bold;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        li {
+            margin: 5px 0;
+            background: #ffe0f1;
+            border-radius: 8px;
+            display: inline-block;
+            padding: 3px 12px;
+            font-size: 1.05em;
+            color: #e75480;
+        }
+        .info {
+            font-size: 0.97em;
+            color: #b95b8f;
+            margin-bottom: 15px;
+        }
+        .links {
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .links a {
+            color: #e75480;
+            text-decoration: underline;
+            font-size: 0.99em;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 18px 4vw 20px 4vw; }
+            .lists { flex-direction: column; gap: 20px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="links">
+            <a href="/">&#8592; กลับหน้าตรวจสอบคำนาม</a>
+        </div>
+        <h2>🩷 จัดการคำนามและไม่ใช่คำนาม 🩷</h2>
+        <div class="info">
+            ใส่คำคั่นด้วย <b>เว้นวรรค</b> หรือ <b>,</b> เช่น <span style="color:#fd6e8a;">หมา,แมว กระต่าย</span>
+        </div>
+        <textarea id="wordsInput" placeholder="เช่น หมู,ไก่ เป็ด"></textarea><br>
+        <button onclick="addNouns()">เพิ่มเป็นคำนาม</button>
+        <button onclick="removeNouns()" class="delete">ลบออกจากคำนาม</button>
+        <button onclick="addNonNouns()" class="non-noun">เพิ่มเป็นไม่ใช่คำนาม</button>
+        <button onclick="removeNonNouns()" class="non-noun delete">ลบออกจากไม่ใช่คำนาม</button>
+        <div class="lists">
+            <div class="list-block">
+                <div class="subtitle">🐰 คำนามที่กำหนดเอง</div>
+                <ul id="nounList"></ul>
+            </div>
+            <div class="list-block">
+                <div class="subtitle">🍡 คำที่บังคับว่าไม่ใช่คำนาม</div>
+                <ul id="nonNounList"></ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        async function fetchNounList() {
+            const res = await fetch("/list_custom_nouns");
+            const list = await res.json();
+            const ul = document.getElementById("nounList");
+            ul.innerHTML = "";
+            list.forEach(word => {
+                const li = document.createElement("li");
+                li.textContent = "🩷 " + word;
+                ul.appendChild(li);
+            });
+        }
+        async function fetchNonNounList() {
+            const res = await fetch("/list_custom_non_nouns");
+            const list = await res.json();
+            const ul = document.getElementById("nonNounList");
+            ul.innerHTML = "";
+            list.forEach(word => {
+                const li = document.createElement("li");
+                li.textContent = "🍡 " + word;
+                ul.appendChild(li);
+            });
+        }
+        function inputWords() {
+            return document.getElementById("wordsInput").value.trim();
+        }
+        function swalResult(res, action) {
+            let msg = "";
+            if(res.added && res.added.length)
+                msg += `🎉 <b>เพิ่มแล้ว</b>: <span style='color:#e75480'>${res.added.join(', ')}</span><br>`;
+            if(res.removed && res.removed.length)
+                msg += `🗑️ <b>ลบแล้ว</b>: <span style='color:#fd6e8a'>${res.removed.join(', ')}</span><br>`;
+            if(res.existed && res.existed.length)
+                msg += `⚠️ <b>มีอยู่แล้ว</b>: <span style='color:#b95b8f'>${res.existed.join(', ')}</span><br>`;
+            if(res.notfound && res.notfound.length)
+                msg += `🚫 <b>ไม่พบ</b>: <span style='color:#b95b8f'>${res.notfound.join(', ')}</span><br>`;
+            if(res.error && res.error.length)
+                msg += `❌ <b>รูปแบบผิด</b>: <span style='color:#b95b8f'>${res.error.join(', ')}</span><br>`;
+            if(!msg) msg = "ไม่มีการเปลี่ยนแปลง";
+            Swal.fire({
+                html: msg,
+                icon: action==="add" ? "success" : "info",
+                confirmButtonColor: "#e75480",
+                background: "#fff0fa",
+                customClass: {popup: "swal2-pink"}
+            });
+        }
+        async function addNouns() {
+            const words = inputWords();
+            if(!words) {
+                Swal.fire({icon:"warning", text:"กรุณาใส่คำ", confirmButtonColor:"#e75480"});
+                return;
+            }
+            const res = await fetch("/add_custom_nouns", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({words})
+            });
+            const data = await res.json();
+            swalResult(data, "add");
+            fetchNounList();
+            fetchNonNounList();
+        }
+        async function removeNouns() {
+            const words = inputWords();
+            if(!words) {
+                Swal.fire({icon:"warning", text:"กรุณาใส่คำ", confirmButtonColor:"#e75480"});
+                return;
+            }
+            const res = await fetch("/remove_custom_nouns", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({words})
+            });
+            const data = await res.json();
+            swalResult(data, "remove");
+            fetchNounList();
+            fetchNonNounList();
+        }
+        async function addNonNouns() {
+            const words = inputWords();
+            if(!words) {
+                Swal.fire({icon:"warning", text:"กรุณาใส่คำ", confirmButtonColor:"#e75480"});
+                return;
+            }
+            const res = await fetch("/add_custom_non_nouns", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({words})
+            });
+            const data = await res.json();
+            swalResult(data, "add");
+            fetchNonNounList();
+            fetchNounList();
+        }
+        async function removeNonNouns() {
+            const words = inputWords();
+            if(!words) {
+                Swal.fire({icon:"warning", text:"กรุณาใส่คำ", confirmButtonColor:"#e75480"});
+                return;
+            }
+            const res = await fetch("/remove_custom_non_nouns", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({words})
+            });
+            const data = await res.json();
+            swalResult(data, "remove");
+            fetchNonNounList();
+            fetchNounList();
+        }
+        fetchNounList();
+        fetchNonNounList();
+    </script>
+</body>
+</html>
